@@ -10,6 +10,8 @@
   "author": "Timothy Cheung",
   "license": "GNU GPL V3",
   "dependencies": {
+    "dotenv": "^16.0.3",
+    "ebay-oauth-nodejs-client": "^1.2.2",
     "express": "^4.18.1"
   }
 }

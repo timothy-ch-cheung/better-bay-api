@@ -1,4 +1,12 @@
+require('dotenv').config()
 const express = require('express');
+const EbayClient = require('ebay-oauth-nodejs-client');
+
+const ebayAuthToken = new EbayClient({
+    clientId: process.env.EBAY_CLIENT_ID,
+    clientSecret: process.env.EBAY_CLIENT_SECRET,
+    redirectUri: process.env.EBAY_REDIRECT_URI
+});
 
 const app = express();
 
