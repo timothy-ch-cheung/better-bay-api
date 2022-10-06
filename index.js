@@ -8,6 +8,11 @@ const ebayAuthToken = new EbayClient({
     redirectUri: process.env.EBAY_REDIRECT_URI
 });
 
+(async () => {
+    const token = await ebayAuthToken.getApplicationToken('PRODUCTION');
+    console.log(token);
+})();
+
 const app = express();
 
 const port = 3000;
