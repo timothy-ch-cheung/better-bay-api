@@ -10,7 +10,7 @@
   "author": "Timothy Cheung",
   "license": "GNU GPL V3",
   "dependencies": {
-    "better-bay-common": "^1.0.16",
+    "better-bay-common": "^1.0.17",
     "dotenv": "^16.0.3",
     "ebay-oauth-nodejs-client": "^1.2.2",
     "express": "^4.18.1"
