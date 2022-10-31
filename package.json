@@ -4,16 +4,23 @@
   "description": "API backend for Better Bay extension chrome extension",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
+    "build": "npx tsc",
+    "start": "node lib/index.js",
+    "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Timothy Cheung",
   "license": "GNU GPL V3",
   "dependencies": {
-    "better-bay-common": "^1.0.17",
+    "@types/express": "^4.17.14",
+    "better-bay-common": "^1.0.24",
     "dotenv": "^16.0.3",
     "ebay-oauth-nodejs-client": "^1.2.2",
     "express": "^4.18.1"
   },
-  "type": "module"
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^18.11.3",
+    "typescript": "^4.8.4"
+  }
 }
