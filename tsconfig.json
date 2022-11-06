@@ -5,6 +5,7 @@
             "es2022"
         ],
         "module": "NodeNext",
+        "moduleResolution": "node",
         "target": "es2022",
         "declaration": true,
         "outDir": "./lib/",

@@ -1,5 +1,6 @@
 # Dependency directories
 node_modules/
+lib/
 
 # Environemnt
 .env
