@@ -14,7 +14,8 @@ export function cheapestItemHandler(req: CheapestItemRequest, res: express.Respo
 
     const itemIdList: string[] = itemIds.split(",")
 
-    client.getCheapestItems(itemIdList).then((items: Record<string, BetterBayItem>) => {
-        res.send(items);
+    return new Promise(async (resolve, reject) => {
+        let cheapestItems = await client.getCheapestItems(itemIdList)
+        resolve(res.send(cheapestItems))
     })
 }
