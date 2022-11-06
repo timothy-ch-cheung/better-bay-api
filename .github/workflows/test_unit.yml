@@ -19,3 +19,7 @@ jobs:
       - run: npm ci
       - run: npm run build --if-present
       - run: npm run test
+
+      - uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODE_COV_TOKEN }} # not required for public repos

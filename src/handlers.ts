@@ -1,6 +1,5 @@
 import { BetterBayClient } from "better-bay-common";
 import { CheapestItemRequest } from "./types.js"
-import { BetterBayItem } from "better-bay-common";
 import express from "express"
 
 const idsRegex = /^(\d+,)*(\d+)$/
