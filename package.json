@@ -7,6 +7,7 @@
     "build": "npx tsc",
     "start": "node lib/index.js",
     "dev": "concurrently \"npx tsc --watch\" \"nodemon -q dist/index.js\"",
+    "prod": "node lib/index.js NODE_ENV=production",
     "test": "node --no-warnings --experimental-vm-modules node_modules/jest/bin/jest.js --testPathPattern=.*.test.ts --collect-coverage"
   },
   "author": "Timothy Cheung",

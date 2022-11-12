@@ -7,7 +7,7 @@ import { CheapestItemRequest } from "./types.js"
 
 dotenv.config();
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000
 
 export const client = await buildBetterBayClient(
     process.env.EBAY_CLIENT_ID || "",
