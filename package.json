@@ -15,7 +15,7 @@
   "dependencies": {
     "@jest/globals": "^29.3.1",
     "@types/express": "^4.17.14",
-    "better-bay-common": "^1.0.24",
+    "better-bay-common": "^1.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
     "ebay-oauth-nodejs-client": "^1.2.2",
