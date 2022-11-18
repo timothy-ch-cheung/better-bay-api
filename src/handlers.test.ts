@@ -16,7 +16,7 @@ describe('Cheapest Items', () => {
             id: "123",
             title: "Item name",
             description: { "colour": "blue" },
-            price: 999,
+            price: "999",
             currency: "GBP"
         }
         cheapestItems = { "123": item }
