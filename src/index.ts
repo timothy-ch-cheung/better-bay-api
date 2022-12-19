@@ -2,7 +2,7 @@ import dotenv from "dotenv"
 import express from "express"
 import cors from "cors"
 import { buildBetterBayClient } from "better-bay-common"
-import { cheapestItemHandler } from "./handlers.js"
+import { cheapestItemHandler, healthcheck } from "./handlers.js"
 import { CheapestItemRequest } from "./types.js"
 
 
@@ -20,9 +20,13 @@ export const client = await buildBetterBayClient(
 const _cheapestItemHandler = function (req: CheapestItemRequest, res: express.Response) {
     cheapestItemHandler(req, res, client)
 }
+const _healthcheck = function (req: any, res: express.Response) {
+    healthcheck(req, res, client);
+}
 
 app.use(cors())
 
 app.get('/v1/items/cheapest', _cheapestItemHandler);
+app.get('/v1/healthcheck', _healthcheck);
 
 app.listen(port, () => console.log(`Better Bay API listening on port ${port}!`))

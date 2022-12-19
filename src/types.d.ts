@@ -5,3 +5,8 @@ interface IdListQuery {
 export interface CheapestItemRequest {
     query: IdListQuery
 }
+
+export interface HealthCheck {
+    status: string,
+    code: number
+}
