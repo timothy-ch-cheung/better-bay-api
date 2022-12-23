@@ -7,23 +7,24 @@ import { CheapestItemRequest } from './types.js'
 
 dotenv.config()
 const app = express()
-const port = process.env.PORT || 3000
+const port = process?.env?.PORT ?? 3000
 
 export const client = await buildBetterBayClient(
-  process.env.EBAY_CLIENT_ID || '',
-  process.env.EBAY_CLIENT_SECRET || '',
-  process.env.EBAY_REDIRECT_URI || '',
+  process?.env?.EBAY_CLIENT_ID ?? '',
+  process?.env?.EBAY_CLIENT_SECRET ?? '',
+  process?.env?.EBAY_REDIRECT_URI ?? '',
   true
 )
 
 const _cheapestItemHandler = function (
   req: CheapestItemRequest,
   res: express.Response
-) {
-  cheapestItemHandler(req, res, client)
+): void {
+  void cheapestItemHandler(req, res, client)
 }
-const _healthcheck = function (req: any, res: express.Response) {
-  healthcheck(req, res, client)
+
+const _healthcheck = function (req: any, res: express.Response): void {
+  void healthcheck(req, res, client)
 }
 
 app.use(cors())

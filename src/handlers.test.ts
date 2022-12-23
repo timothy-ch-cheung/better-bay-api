@@ -33,14 +33,14 @@ describe('Handlers', () => {
       const client = stubInterface<BetterBayClient>()
 
       assert.throws(
-        () => cheapestItemHandler(req, res, client),
+        async () => await cheapestItemHandler(req, res, client),
         Error,
         "Query param 'ids' is null or malformed."
       )
       sinon.assert.notCalled(res.send)
     })
 
-    test('Get cheapest item', () => {
+    test('Get cheapest item', async () => {
       const req: CheapestItemRequest = {
         query: {
           ids: '123,456,789'
@@ -53,24 +53,24 @@ describe('Handlers', () => {
         new Promise((resolve) => resolve(cheapestItems))
       )
 
-      let cheapestItemPromise = cheapestItemHandler(req, res, client)
+      const cheapestItemPromise = cheapestItemHandler(req, res, client)
 
-      return cheapestItemPromise.then(() => {
+      return await cheapestItemPromise.then(() => {
         sinon.assert.calledOnceWithExactly(res.send, cheapestItems)
       })
     })
   })
 
   describe('Health Check', () => {
-    test('200 OK', () => {
+    test('200 OK', async () => {
       const res = stubInterface<express.Response>()
       const client = stubInterface<BetterBayClient>()
       const limit = { cheapestItem: { limit: 100, remaining: 25 } }
       client.healthCheck.returns(new Promise((resolve) => resolve(limit)))
 
-      let healthcheckPromise = healthcheck({}, res, client)
+      const healthcheckPromise = healthcheck({}, res, client)
 
-      return healthcheckPromise.then(() => {
+      return await healthcheckPromise.then(() => {
         sinon.assert.calledOnceWithExactly(res.send, {
           status: 'HEALTHY',
           code: 200
@@ -78,15 +78,15 @@ describe('Handlers', () => {
       })
     })
 
-    test('503 SERVICE UNAVAILABLE', () => {
+    test('503 SERVICE UNAVAILABLE', async () => {
       const res = stubInterface<express.Response>()
       const client = stubInterface<BetterBayClient>()
       const limit = { cheapestItem: { limit: 100, remaining: 0 } }
       client.healthCheck.returns(new Promise((resolve) => resolve(limit)))
 
-      let healthcheckPromise = healthcheck({}, res, client)
+      const healthcheckPromise = healthcheck({}, res, client)
 
-      return healthcheckPromise.then(() => {
+      return await healthcheckPromise.then(() => {
         sinon.assert.calledOnceWithExactly(res.send, {
           status: 'UNHEALTHY',
           code: 503
