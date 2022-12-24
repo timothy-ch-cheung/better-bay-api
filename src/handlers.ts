@@ -11,15 +11,22 @@ export async function cheapestItemHandler(
 ): Promise<Response<any, Record<string, any>>> {
   const itemIds = req.query.ids
 
-  if (itemIds == null || !idsRegex.test(itemIds)) {
+  if (itemIds === '' || !idsRegex.test(itemIds)) {
     throw new Error("Query param 'ids' is null or malformed.")
   }
 
   const itemIdList: string[] = itemIds.split(',')
 
-  return await new Promise((resolve, reject): void => {
-    const cheapestItems = client.getCheapestItems(itemIdList)
-    resolve(res.send(cheapestItems))
+  const cheapestItemsPromise = client.getCheapestItems(itemIdList)
+  return await new Promise((resolve, reject) => {
+    cheapestItemsPromise
+      .then((cheapestItems) => {
+        resolve(res.send(cheapestItems))
+      })
+      .catch((error: Error) => {
+        console.log(`Failed to call cheapestItems [${error.message}]`)
+        reject(error)
+      })
   })
 }
 
@@ -39,7 +46,8 @@ export async function healthcheck(
         }
       })
       .catch((error: Error) => {
-        console.log(`Failed call healthcheck [${error.message}]`)
+        console.log(`Failed to call healthcheck [${error.message}]`)
+        reject(error)
       })
   })
 }

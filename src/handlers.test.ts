@@ -3,7 +3,6 @@ import { cheapestItemHandler, healthcheck } from './handlers.js'
 import { CheapestItemRequest } from './types.js'
 import express from 'express'
 import { stubInterface } from 'ts-sinon'
-import assert from 'assert'
 import { BetterBayClient, BetterBayItem } from 'better-bay-common'
 import sinon from 'sinon'
 
@@ -22,7 +21,7 @@ describe('Handlers', () => {
       cheapestItems = { '123': item }
     })
 
-    test('Should throw error when query parameter incorrectly formatted', () => {
+    test('Should throw error when query parameter incorrectly formatted', async () => {
       const req: CheapestItemRequest = {
         query: {
           ids: '123|456|789'
@@ -32,12 +31,26 @@ describe('Handlers', () => {
       const res = stubInterface<express.Response>()
       const client = stubInterface<BetterBayClient>()
 
-      assert.throws(
-        async () => await cheapestItemHandler(req, res, client),
-        Error,
-        "Query param 'ids' is null or malformed."
+      await expect(cheapestItemHandler(req, res, client)).rejects.toEqual(
+        new Error("Query param 'ids' is null or malformed.")
       )
       sinon.assert.notCalled(res.send)
+    })
+
+    test('API Call fails', async () => {
+      const req: CheapestItemRequest = {
+        query: {
+          ids: '123,456,789'
+        }
+      }
+
+      const res = stubInterface<express.Response>()
+      const client = stubInterface<BetterBayClient>()
+      client.getCheapestItems.rejects(new Error('API Call failed'))
+
+      await expect(cheapestItemHandler(req, res, client)).rejects.toEqual(
+        new Error('API Call failed')
+      )
     })
 
     test('Get cheapest item', async () => {
@@ -92,6 +105,16 @@ describe('Handlers', () => {
           code: 503
         })
       })
+    })
+
+    test('API call failed', async () => {
+      const res = stubInterface<express.Response>()
+      const client = stubInterface<BetterBayClient>()
+      client.healthCheck.rejects(new Error('API call failed'))
+
+      await expect(healthcheck({}, res, client)).rejects.toEqual(
+        new Error('API call failed')
+      )
     })
   })
 })
