@@ -1,12 +1,12 @@
 interface IdListQuery {
-    ids: string
+  ids: string
 }
 
 export interface CheapestItemRequest {
-    query: IdListQuery
+  query: IdListQuery
 }
 
 export interface HealthCheck {
-    status: string,
-    code: number
+  status: string
+  code: number
 }

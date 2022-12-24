@@ -1,31 +1,53 @@
-import { BetterBayClient } from "better-bay-common";
-import { CheapestItemRequest, HealthCheck } from "./types.js"
-import express from "express"
+import { BetterBayClient } from 'better-bay-common'
+import { CheapestItemRequest } from './types.js'
+import express, { Response } from 'express'
 
 const idsRegex = /^(\d+,)*(\d+)$/
 
-export function cheapestItemHandler(req: CheapestItemRequest, res: express.Response, client: BetterBayClient) {
-    const itemIds = req.query.ids
+export async function cheapestItemHandler(
+  req: CheapestItemRequest,
+  res: express.Response,
+  client: BetterBayClient
+): Promise<Response<any, Record<string, any>>> {
+  const itemIds = req.query.ids
 
-    if (!itemIds || !idsRegex.test(itemIds)) {
-        throw new Error("Query param 'ids' is null or malformed.")
-    }
+  if (itemIds === '' || !idsRegex.test(itemIds)) {
+    throw new Error("Query param 'ids' is null or malformed.")
+  }
 
-    const itemIdList: string[] = itemIds.split(",")
+  const itemIdList: string[] = itemIds.split(',')
 
-    return new Promise(async (resolve, reject) => {
-        let cheapestItems = await client.getCheapestItems(itemIdList)
+  const cheapestItemsPromise = client.getCheapestItems(itemIdList)
+  return await new Promise((resolve, reject) => {
+    cheapestItemsPromise
+      .then((cheapestItems) => {
         resolve(res.send(cheapestItems))
-    })
+      })
+      .catch((error: Error) => {
+        console.log(`Failed to call cheapestItems [${error.message}]`)
+        reject(error)
+      })
+  })
 }
 
-export function healthcheck(req: any, res: express.Response, client: BetterBayClient) {
-    return new Promise(async (resolve, reject) => {
-        const status = await client.healthCheck();
+export async function healthcheck(
+  req: any,
+  res: express.Response,
+  client: BetterBayClient
+): Promise<Response<any>> {
+  return await new Promise((resolve, reject) => {
+    const statusPromise = client.healthCheck()
+    statusPromise
+      .then((status) => {
         if (status.cheapestItem.remaining > 0) {
-            resolve(res.send({ status: "HEALTHY", code: 200 }));
+          resolve(res.send({ status: 'HEALTHY', code: 200 }))
         } else {
-            resolve(res.send({ status: "UNHEALTHY", code: 503 }));
+          resolve(res.send({ status: 'UNHEALTHY', code: 503 }))
         }
-    })
+      })
+      .catch((error: Error) => {
+        console.log(`Failed to call healthcheck [${error.message}]`)
+        reject(error)
+      })
+  })
 }
