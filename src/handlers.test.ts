@@ -72,6 +72,32 @@ describe('Handlers', () => {
         sinon.assert.calledOnceWithExactly(res.send, cheapestItems)
       })
     })
+
+    test('Anaylse is called with Get cheapest item', async () => {
+      const req: CheapestItemRequest = {
+        query: {
+          ids: '123,456,789',
+          analyse: 'true'
+        }
+      }
+
+      const res = stubInterface<express.Response>()
+      const client = stubInterface<BetterBayClient>()
+      client.getCheapestItems.returns(
+        new Promise((resolve) => resolve(cheapestItems))
+      )
+
+      const cheapestItemPromise = cheapestItemHandler(req, res, client)
+
+      return await cheapestItemPromise.then(() => {
+        sinon.assert.calledOnceWithExactly(res.send, cheapestItems)
+        sinon.assert.calledOnceWithExactly(
+          client.getCheapestItems,
+          ['123', '456', '789'],
+          true
+        )
+      })
+    })
   })
 
   describe('Health Check', () => {
