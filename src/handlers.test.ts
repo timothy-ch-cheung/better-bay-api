@@ -3,15 +3,15 @@ import { cheapestItemHandler, healthcheck } from './handlers.js'
 import { CheapestItemRequest } from './types.js'
 import express from 'express'
 import { stubInterface } from 'ts-sinon'
-import { BetterBayClient, BetterBayItem } from 'better-bay-common'
+import { BetterBayClient, BetterBayItemResponse } from 'better-bay-common'
 import sinon from 'sinon'
 
 describe('Handlers', () => {
   describe('Cheapest Items', () => {
-    let cheapestItems: Record<string, BetterBayItem>
+    let cheapestItems: Record<string, BetterBayItemResponse>
 
     beforeEach(() => {
-      const item: BetterBayItem = {
+      const item: BetterBayItemResponse = {
         id: '123',
         title: 'Item name',
         description: { colour: 'blue' },
@@ -70,6 +70,32 @@ describe('Handlers', () => {
 
       return await cheapestItemPromise.then(() => {
         sinon.assert.calledOnceWithExactly(res.send, cheapestItems)
+      })
+    })
+
+    test('Anaylse is called with Get cheapest item', async () => {
+      const req: CheapestItemRequest = {
+        query: {
+          ids: '123,456,789',
+          analyse: 'true'
+        }
+      }
+
+      const res = stubInterface<express.Response>()
+      const client = stubInterface<BetterBayClient>()
+      client.getCheapestItems.returns(
+        new Promise((resolve) => resolve(cheapestItems))
+      )
+
+      const cheapestItemPromise = cheapestItemHandler(req, res, client)
+
+      return await cheapestItemPromise.then(() => {
+        sinon.assert.calledOnceWithExactly(res.send, cheapestItems)
+        sinon.assert.calledOnceWithExactly(
+          client.getCheapestItems,
+          ['123', '456', '789'],
+          true
+        )
       })
     })
   })
