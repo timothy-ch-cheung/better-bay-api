@@ -10,6 +10,7 @@ export async function cheapestItemHandler(
   client: BetterBayClient
 ): Promise<Response<any, Record<string, any>>> {
   const itemIds = req.query.ids
+  const analyse: boolean = req.query.analyse === 'true'
 
   if (itemIds === '' || !idsRegex.test(itemIds)) {
     throw new Error("Query param 'ids' is null or malformed.")
@@ -17,7 +18,7 @@ export async function cheapestItemHandler(
 
   const itemIdList: string[] = itemIds.split(',')
 
-  const cheapestItemsPromise = client.getCheapestItems(itemIdList)
+  const cheapestItemsPromise = client.getCheapestItems(itemIdList, analyse)
   return await new Promise((resolve, reject) => {
     cheapestItemsPromise
       .then((cheapestItems) => {
