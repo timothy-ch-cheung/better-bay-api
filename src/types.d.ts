@@ -1,5 +1,6 @@
 interface IdListQuery {
   ids: string
+  analyse?: string
 }
 
 export interface CheapestItemRequest {
