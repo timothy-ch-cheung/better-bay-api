@@ -10,6 +10,5 @@ export default {
   },
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1'
-  },
-  moduleDirectories: ['node_modules', 'src']
+  }
 }
