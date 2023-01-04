@@ -1,12 +1,15 @@
-import { describe, test, beforeEach } from '@jest/globals'
-import { cheapestItemHandler, healthcheck } from './handlers.js'
+import { cheapestItemHandler, healthcheck, cache } from './handlers.js'
 import { CheapestItemRequest } from './types.js'
 import express from 'express'
-import { stubInterface } from 'ts-sinon'
 import { BetterBayClient, BetterBayItemResponse } from 'better-bay-common'
 import sinon from 'sinon'
+import { stubInterface } from 'ts-sinon'
 
 describe('Handlers', () => {
+  beforeEach(() => {
+    cache.clear()
+  })
+
   describe('Cheapest Items', () => {
     let cheapestItems: Record<string, BetterBayItemResponse>
 
@@ -70,6 +73,34 @@ describe('Handlers', () => {
 
       return await cheapestItemPromise.then(() => {
         sinon.assert.calledOnceWithExactly(res.send, cheapestItems)
+      })
+    })
+
+    test('Get cheapest item, cached', async () => {
+      const req: CheapestItemRequest = {
+        query: {
+          ids: '123'
+        }
+      }
+
+      cache.set({
+        123: {
+          id: '123',
+          title: 'Item name',
+          description: { colour: 'blue' },
+          price: '999',
+          currency: 'GBP'
+        }
+      })
+
+      const res = stubInterface<express.Response>()
+      const client = stubInterface<BetterBayClient>()
+
+      const cheapestItemPromise = cheapestItemHandler(req, res, client)
+
+      return await cheapestItemPromise.then(() => {
+        sinon.assert.calledOnceWithExactly(res.send, cheapestItems)
+        sinon.assert.notCalled(client.getCheapestItems)
       })
     })
 
