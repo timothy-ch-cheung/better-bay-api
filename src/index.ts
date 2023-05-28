@@ -18,13 +18,22 @@ export const client = await buildBetterBayClient(
 
 const _cheapestItemHandler = function (
   req: CheapestItemRequest,
-  res: express.Response
+  res: express.Response,
+  next: express.NextFunction
 ): void {
-  void cheapestItemHandler(req, res, client)
+  cheapestItemHandler(req, res, client).catch((error) => {
+    next(error)
+  })
 }
 
-const _healthcheck = function (req: any, res: express.Response): void {
-  void healthcheck(req, res, client)
+const _healthcheck = function (
+  req: any,
+  res: express.Response,
+  next: express.NextFunction
+): void {
+  healthcheck(req, res, client).catch((error) => {
+    next(error)
+  })
 }
 
 app.use(cors())
