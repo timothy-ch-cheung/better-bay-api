@@ -1,8 +1,10 @@
 import { BetterBayClient } from 'better-bay-common'
 import { CheapestItemRequest } from './types.js'
 import express, { Response } from 'express'
+import { Cache } from './cache.js'
 
 const idsRegex = /^(\d+,)*(\d+)$/
+export const cache = new Cache()
 
 export async function cheapestItemHandler(
   req: CheapestItemRequest,
@@ -18,11 +20,24 @@ export async function cheapestItemHandler(
 
   const itemIdList: string[] = itemIds.split(',')
 
-  const cheapestItemsPromise = client.getCheapestItems(itemIdList, analyse)
+  const cacheResponse = cache.get(itemIdList)
+  if (cacheResponse.missed.length === 0) {
+    return res.send(cacheResponse.items)
+  }
+
+  const cheapestItemsPromise = client.getCheapestItems(
+    cacheResponse.missed,
+    analyse
+  )
   return await new Promise((resolve, reject) => {
     cheapestItemsPromise
       .then((cheapestItems) => {
-        resolve(res.send(cheapestItems))
+        cache.set(cheapestItems)
+        const cacheApiCombinedItems = {
+          ...cacheResponse.items,
+          ...cheapestItems
+        }
+        resolve(res.send(cacheApiCombinedItems))
       })
       .catch((error: Error) => {
         console.log(`Failed to call cheapestItems [${error.message}]`)
