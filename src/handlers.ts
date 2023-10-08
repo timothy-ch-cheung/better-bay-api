@@ -2,6 +2,7 @@ import { BetterBayClient } from 'better-bay-common'
 import { CheapestItemRequest } from './types.js'
 import express, { Response } from 'express'
 import { Cache } from './cache.js'
+import { AxiosError } from 'axios'
 
 const idsRegex = /^(\d+,)*(\d+)$/
 export const cache = new Cache()
@@ -40,7 +41,15 @@ export async function cheapestItemHandler(
         resolve(res.send(cacheApiCombinedItems))
       })
       .catch((error: Error) => {
-        console.log(`Failed to call cheapestItems [${error.message}]`)
+        if (error instanceof AxiosError) {
+          console.log(
+            `Failed to call cheapestItems - response code [${
+              error.response?.status ?? 'N/A'
+            }], response body [${JSON.stringify(error.response?.data)}]`
+          )
+        } else {
+          console.log(`Failed to call cheapestItems [${error.message}]`)
+        }
         reject(error)
       })
   })
@@ -62,7 +71,15 @@ export async function healthcheck(
         }
       })
       .catch((error: Error) => {
-        console.log(`Failed to call healthcheck [${error.message}]`)
+        if (error instanceof AxiosError) {
+          console.log(
+            `Failed to call healthcheck - response code [${
+              error.response?.status ?? 'N/A'
+            }], response body [${JSON.stringify(error.response?.data)}]`
+          )
+        } else {
+          console.log(`Failed to call healthcheck [${error.message}]`)
+        }
         reject(error)
       })
   })
